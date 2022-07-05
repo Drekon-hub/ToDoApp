@@ -1,0 +1,49 @@
+import { useState } from 'react';
+
+export default function Todo({ todo, onUpadate, onDelete }) {
+  const [isEdit, setIsEdit] = useState(false);
+
+  function FormEdit() {
+    const [newValue, setNewValue] = useState(todo.title);
+
+    function handleSubmit(e) {
+      e.preventDefault();
+    }
+    function handleChange(e) {
+      const value = e.target.value;
+      setNewValue(value);
+    }
+
+    function handleClickUpadateTodo(e) {
+      e.preventDefault();
+      onUpadate(todo.id, newValue);
+      setIsEdit(false);
+    }
+
+    return (
+      <form className='todoUpdateForm' onSubmit={handleSubmit}>
+        <input
+          type='text'
+          className='todoInput'
+          onChange={handleChange}
+          value={newValue}
+        />
+        <button className='button' onClick={handleClickUpadateTodo}>
+          Update
+        </button>
+      </form>
+    );
+  }
+
+  function TodoElement() {
+    return (
+      <div className='todoInfo'>
+        {todo.title}
+        <button onClick={() => setIsEdit(true)}>Edit</button>
+        <button onClick={(e)=> onDelete(todo.id)}>Delete</button>
+      </div>
+    );
+  }
+
+  return <div className='todo'>{isEdit ? <FormEdit /> : <TodoElement />}</div>;
+}
