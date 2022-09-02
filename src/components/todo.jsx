@@ -1,49 +1,67 @@
 import { useState } from 'react';
+import './todoApp.css';
 
-export default function Todo({ todo, onUpadate, onDelete }) {
+export default function Todo({ item, onUpdate, onComplete, onDelete }) {
   const [isEdit, setIsEdit] = useState(false);
+  const [value, setValue] = useState(item.title ?? "");
 
-  function FormEdit() {
-    const [newValue, setNewValue] = useState(todo.title);
-
-    function handleSubmit(e) {
-      e.preventDefault();
-    }
-    function handleChange(e) {
-      const value = e.target.value;
-      setNewValue(value);
-    }
-
-    function handleClickUpadateTodo(e) {
-      e.preventDefault();
-      onUpadate(todo.id, newValue);
-      setIsEdit(false);
-    }
-
-    return (
-      <form className='todoUpdateForm' onSubmit={handleSubmit}>
-        <input
-          type='text'
-          className='todoInput'
-          onChange={handleChange}
-          value={newValue}
-        />
-        <button className='button' onClick={handleClickUpadateTodo}>
-          Update
-        </button>
-      </form>
-    );
+  function handleChange(e) {
+    setValue(e.target.value);
   }
 
-  function TodoElement() {
-    return (
-      <div className='todoInfo'>
-        {todo.title}
-        <button onClick={() => setIsEdit(true)}>Edit</button>
-        <button onClick={(e)=> onDelete(todo.id)}>Delete</button>
-      </div>
-    );
+  function handleUpdate() {
+    onUpdate(item.id, value);
+    setIsEdit(false);
   }
 
-  return <div className='todo'>{isEdit ? <FormEdit /> : <TodoElement />}</div>;
+  function handleSubmit(e) {
+    e.preventDefault();
+    onUpdate(item.id, value);
+    setIsEdit(false);
+  }
+
+  function handleCheckboxChange(e) {
+    onComplete(item.id, e.target.checked);
+  }
+
+  return (
+    <div className="todo">
+      {isEdit ? (
+        <form onSubmit={handleSubmit} className="todoUpdateForm">
+          <input
+            className="todoInput"
+            type="text"
+            value={value}
+            onChange={handleChange}
+          />
+          <button className="button" onClick={handleUpdate}>
+            Update
+          </button>
+        </form>
+      ) : (
+        <div className="todoInfo">
+          <input
+            type={"checkbox"}
+            onChange={handleCheckboxChange}
+            checked={item.checked}
+          />
+          <span
+            className="todoTitle"
+            style={{
+              color: item.completed ? "#ccc" : "",
+              textDecoration: item.completed ? "line-through" : "",
+            }}
+          >
+            {item.title}
+          </span>
+          <button className="button" onClick={() => setIsEdit(true)}>
+            Edit
+          </button>
+          <button className="buttonDelete" onClick={() => onDelete(item.id)}>
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
